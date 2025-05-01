@@ -11,3 +11,5 @@
 .venv/
 .zip
 .DS_Store
+test-event.json
+response.json

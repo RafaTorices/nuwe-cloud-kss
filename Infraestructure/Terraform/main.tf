@@ -11,12 +11,12 @@ provider "aws" {
 
   # Use LocalStack endpoints for AWS services
   endpoints {
-    s3      = "http://localhost.localstack.cloud:4566"
-    sqs     = "http://localhost.localstack.cloud:4566"
-    sns     = "http://localhost.localstack.cloud:4566"
-    lambda  = "http://localhost.localstack.cloud:4566"
-    kinesis = "http://localhost.localstack.cloud:4566"
-    iam     = "http://localhost.localstack.cloud:4566"
+    s3      = "https://s3.localhost.localstack.cloud:4566"
+    sqs     = "https://localhost.localstack.cloud:4566"
+    sns     = "https://localhost.localstack.cloud:4566"
+    lambda  = "https://localhost.localstack.cloud:4566"
+    kinesis = "https://localhost.localstack.cloud:4566"
+    iam     = "https://localhost.localstack.cloud:4566"
   }
 }
 

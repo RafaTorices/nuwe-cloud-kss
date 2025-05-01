@@ -7,6 +7,7 @@
 import json
 import boto3 # AWS SDK for Python
 import os
+import base64 # For decoding base64-encoded data
 
 s3 = boto3.client('s3') # S3 client to interact with Amazon S3
 sns = boto3.client('sns') # SNS client to interact with Amazon Simple Notification Service
@@ -17,7 +18,9 @@ topic_arn = os.environ['TOPIC_ARN'] # SNS topic ARN for error notifications
 def lambda_handler(event, context):
     for record in event['Records']:
         try:
-            payload = json.loads(record['kinesis']['data'])
+            data = base64.b64decode(record['kinesis']['data']).decode('utf-8')
+            payload = json.loads(data)
+            # Modify the payload add a test key
             payload['test'] = True
 
             event_id = record['eventID']
@@ -38,3 +41,4 @@ def lambda_handler(event, context):
                 TopicArn=topic_arn,
                 Message=json.dumps(error_message)
             )
+    return {"status": "Terminated"}
