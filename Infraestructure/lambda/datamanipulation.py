@@ -15,30 +15,44 @@ sns = boto3.client('sns') # SNS client to interact with Amazon Simple Notificati
 bucket_name = 'datastorage' # S3 bucket name where the processed data will be stored
 topic_arn = os.environ['TOPIC_ARN'] # SNS topic ARN for error notifications
 
+# Lambda function handler
+# This function is triggered by Kinesis events
 def lambda_handler(event, context):
     for record in event['Records']:
         try:
+            # Data processing logic
+            # Decode the base64-encoded data from the Kinesis record
+            # The data is expected to be in JSON format
             data = base64.b64decode(record['kinesis']['data']).decode('utf-8')
             payload = json.loads(data)
             # Modify the payload add a test key
             payload['test'] = True
 
+            # Generate a unique file name using the event ID
+            # The event ID is extracted from the Kinesis record
+            # The file name is used to store the processed data in S3
+            # The file is stored in JSON format
             event_id = record['eventID']
             file_name = f"{event_id}.json"
 
+            # Store the processed data in S3
             s3.put_object(
                 Bucket=bucket_name,
                 Key=file_name,
                 Body=json.dumps(payload)
             )
-
+        # Handle exceptions
         except Exception as e:
             error_message = {
                 "error": str(e),
                 "record": record
             }
+            # Send error notification to SNS
+            # The error message contains the exception details and the Kinesis record that caused the error
+            # This allows for easier debugging and monitoring of the Lambda function
             sns.publish(
                 TopicArn=topic_arn,
                 Message=json.dumps(error_message)
             )
+    # Return a success message
     return {"status": "Terminated"}

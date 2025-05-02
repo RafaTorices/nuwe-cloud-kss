@@ -1,4 +1,5 @@
-# This file is part of the AWS Lambda and LocalStack project.
+# Terraform file configuration for throw AWS Lambda function
+# This Terraform configuration file sets up a LocalStack environment with AWS services
 
 # Provider configuration
 # This Terraform configuration file sets up a LocalStack environment with AWS services
@@ -8,24 +9,13 @@ provider "aws" {
   skip_metadata_api_check     = true   # Skip metadata API check for LocalStack
   access_key                  = "test" # Use dummy access key for LocalStack
   secret_key                  = "test" # Use dummy secret key for LocalStack
-
-  # Use LocalStack endpoints for AWS services
-  endpoints {
-    s3      = "https://s3.localhost.localstack.cloud:4566"
-    sqs     = "https://localhost.localstack.cloud:4566"
-    sns     = "https://localhost.localstack.cloud:4566"
-    lambda  = "https://localhost.localstack.cloud:4566"
-    kinesis = "https://localhost.localstack.cloud:4566"
-    iam     = "https://localhost.localstack.cloud:4566"
-  }
+  s3_use_path_style           = true   # Use path-style URLs for S3
 }
 
-# Create AWS resources
-
 # Create an S3 bucket
-# resource "aws_s3_bucket" "datastorage" {
-#   bucket = "datastorage"
-# }
+resource "aws_s3_bucket" "datastorage" {
+  bucket = "datastorage"
+}
 
 # Create kinesis stream
 resource "aws_kinesis_stream" "datastream" {
@@ -68,6 +58,7 @@ resource "aws_iam_role" "lambda_role" {
 }
 
 # Permission policy for role from policy.json
+# Attach the IAM policy of the file policy.json to the Lambda role
 resource "aws_iam_role_policy" "lambda_policy" {
   name   = "lambda_policy"
   role   = aws_iam_role.lambda_role.id
